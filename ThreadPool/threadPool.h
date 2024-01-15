@@ -32,12 +32,29 @@ struct Threadpool
 
     //最大线程数
     int maxThreads;
+    
+    //忙碌的线程数
+    int busyThreadNums;
+    //存活的线程数
+    int liveThreadNums;
+
+    //锁 维护整个线程池
+    pthread_mutex_t mutexpool;
+    //
+    pthread_mutex_t mutexbusy;
+    //条件变量:任务队列有任务可以消费
+    pthread_cond_t notEmpty;
+    //条件变量:任务队列有空位
+    pthread_cond_t notFull;
 };
 typedef struct Threadpool Threadpool;
 
 
 //线程池的初始化
 int threadPoolInit(Threadpool *pool, int minThreads, int maxThreads, int queueCapacity);
+
+//
+int threadPoolAddTask(Threadpool *pool, void *(worker_hander)(void *), void *arg);
 
 //线程池销毁
 int threadPoolDestroy(Threadpool *pool);
